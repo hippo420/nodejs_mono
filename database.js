@@ -16,8 +16,11 @@ const conn ={
     database : ''   
 };
 
-let connection = mysql.createConnection(conn);
-connection.connect();
-connection.query("query",(error, results, field) =>{
-    //결과처리
-});
+function connectDB(){
+    let connection = mysql.createConnection(conn);
+    connection.connect();
+    connection.query("query",(error, results, field) =>{
+        //결과처리
+    });
+}
+exports.connectDB =connectDB;
