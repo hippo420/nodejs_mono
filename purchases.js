@@ -12,22 +12,76 @@ exports.onRequest= function(res, method, pathname, param, cb){
                 //처리
                 process.nextTick(cb,res,response);
             });
-            break;
 
         case "GET":
             return inquiry(method, pathname, params,(response)=>{
                 process.nextTick(cb,res,response);
             });
-            break;
-
-        case "DELETE":
-            return unregister(method, pathname, params,(response)=>{
-                process.nextTick(cb,res,response);
-            });
-            break;
-        
+ 
         default:
             return process.nextTick(cb,res,response);
-            break;
+
     }
+}
+
+
+function register(method, pathname,params,cb){
+    let response={
+        key : params.key,
+        errorcode : 0,
+        errormessage : "success"
+    };
+
+    //null검사
+    if(params.userid ==null || params.productsid ==null){
+        response.errorcode=1;
+        response.errormessage="Non-Parameters";
+        cb(response);
+    }else{
+        //database.connectDB();
+        let connection = mysql.createConnection(conn);
+        connection.connect();
+        connection.query("insert into purchases(userid, productsid) values(?,?)"
+                        ,[params.userid, params.productsid]
+                        ,(error, results, fields) =>{    
+                            if(error){
+                                response.errorcode=1;
+                                response.errormessage=error;
+                            }
+                            cb(response);
+                        });
+        connection.end();
+    }
+
+}
+
+function inquiry(method, pathname, params, cb){
+    let response={
+        key : params.key,
+        errorcode : 0,
+        errormessage : "success"
+    };
+     //null검사
+     if(params.userid ==null || params.productsid ==null){
+        response.errorcode=1;
+        response.errormessage="Non-Parameters";
+        cb(response);
+    }else{
+        let connection = mysql.createConnection(conn);
+        connection.connect();
+        connection.query("select userid, productsid from purchases where userid = ?"
+                        ,[params.userid]
+                        ,(error, results, fields) =>{    
+                            if(error){
+                                response.errorcode=1;
+                                response.errormessage=error;
+                            }else{
+                                response.results=results;
+                            }
+                            cb(response);
+                        });
+        connection.end();
+    }
+
+
 }

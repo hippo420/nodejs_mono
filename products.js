@@ -66,4 +66,56 @@ function register(method, pathname,params,cb){
         connection.end();
     }
 
-};
+}
+
+function unregister(method, pathname, params, cb){
+    let response={
+        errorcode : 0,
+        errormessage : "success"
+    };
+    if(params.id ==null){
+        response.errorcode=1;
+        response.errormessage="Non-Parameters";
+        cb(response);
+    }else{
+        let connection = mysql.createConnection(conn);
+        connection.connect();
+        connection.query("delete from purchases where id = ?"
+                        ,[params.userid]
+                        ,(error, results, field) =>{    
+                            if(error){
+                                response.errorcode=1;
+                                response.errormessage=error;
+                            }
+                            cb(response);
+                        });
+        connection.end();
+    }
+
+
+}
+
+function inquiry(method, pathname, params, cb){
+    let response={
+        key : params.key,
+        errorcode : 0,
+        errormessage : "success"
+    };
+    
+    let connection = mysql.createConnection(conn);
+    connection.connect();
+    connection.query("select * from purchases"
+                    ,(error, results, field) =>{    
+                        if(error || results.length==0){
+                            response.errorcode=1;
+                            response.errormessage=error ? error : "NO Data";
+                        }else{
+                            response.results=results;
+                        }
+                        cb(response);
+                    });
+    connection.end();
+    
+
+
+}

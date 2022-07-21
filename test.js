@@ -62,3 +62,70 @@ function products(callback){
         request(cb);
     }
 }
+
+//회원관리 api테스트
+function customers(callback){
+    customers_delete(()=>{
+        customers_post(()=>{
+            customers_get(callback);
+        });
+    });
+
+    function customers_post(cb){
+        options.method="POST";
+        options.path="/customers";
+        request(cb,{
+            username: "test_Account",
+            password : "1234",
+            passwordCon : "1234"
+        });
+    }
+
+    function customers_get(cb){
+        options.method="GET";
+        options.path="/customers?username=test_Account&password=1234";
+        request(cb);
+    }
+
+    function customers_delete(cb){
+        options.method="DELETE";
+        options.path="/customers?username=test_Account";
+        request(cb);
+    }
+}
+
+//구매관리 api테스트
+function purchases(callback){
+    purchases_post(()=>{
+        purchases_get(()=>{
+           callback();
+        });
+    });
+
+    function purchases_post(cb){
+        options.method="POST";
+        options.path="/purchases";
+        request(cb,{
+            userid: "user1",
+            productsid : "pro1"
+        });
+    }
+
+    function purchases_get(cb){
+        options.method="GET";
+        options.path="/purchases?userid=user1";
+        request(cb);
+    }
+
+}
+
+console.log("customer list");
+customers(()=>{
+    console.log("customer list");
+    products(()=>{
+        console.log("purchase list");
+        purchases(()=>{
+            console.log("Done!");
+        });
+    });
+});
